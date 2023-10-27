@@ -110,4 +110,9 @@ Main*.py initialize the pipeline giving it's proper order :
 - [ ] Upload the DataFrame to MSQ Server
 - [ ] Create DataFrame with index (missing someones)
 - [ ] See if it's possible to create foreing keys in order to link the dataframes in the SQL
-- [ ]
+
+## Problems faced
+
+- Understanding which data will be useful was challenging. I took an approach of retrieving all the data ( that was very high time consuming and delayed the development )
+- Pipelines took too much time (hours) and made excessive requests to the API, leading to temporary API blocks.
+- Limit on Storage to upload the SQL Lite DB and the ZIP and JSON on folder /in & /out
