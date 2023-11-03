@@ -12,18 +12,18 @@ FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
 logger.setLevel(logging.INFO)
 
-#config = configparser.ConfigParser()
-#config.read('NHTSA\ManufacturerCommunications\config\.env')
+config = configparser.ConfigParser()
+config.read('NHTSA\ManufacturerCommunications\config\.env')
 
 
-def extract(config):
+def extract():
 
     
-    extract_zip(config)
-    extract_file(config)
+    extract_zip()
+    extract_file()
 
 
-def extract_zip(config):
+def extract_zip():
 
     path_in = config['FILES']['IN']
 
@@ -51,7 +51,7 @@ def extract_zip(config):
 
         
 
-def extract_file(config):
+def extract_file():
 
     path_in = config['FILES']['IN']
 
@@ -75,7 +75,7 @@ def extract_file(config):
     logger.info(f"Retrieved {r.ok} from url {url}")
 
 
-def unzip(r,config):
+def unzip(r):
 
     path_in = config['FILES']['IN']
     zip_name = config['NAME']['ZIP']

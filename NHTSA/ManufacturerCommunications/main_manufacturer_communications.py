@@ -13,11 +13,11 @@ date_time= datetime.now().strftime("%Y-%m-%d")
 
 def manufacturerCommunications():
 
-    extract(config)
+    return extract(config)
 
-    df = transform()
+    #df = transform()
 
-    load(df,'NHTSA_ManufacturerCommunications','NHTSA.db')
+    #load(df,'NHTSA_ManufacturerCommunications','NHTSA.db')
 
 if __name__ == '__main__':
     manufacturerCommunications()
