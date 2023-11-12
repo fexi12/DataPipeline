@@ -8,6 +8,7 @@ import configparser
 import os
 import pathlib
 from datetime import datetime 
+import functools
 
 logger = logging.getLogger(__name__)
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
@@ -26,6 +27,10 @@ def extractRatings():
 
     service_list = makeService(debug_list)
     
+    if(len(service_list) == 0):
+        logger.error("No data to process")
+        return
+
     model_list = modelService(service_list)
 
     id_list = vehicleIdService(model_list)
@@ -82,14 +87,13 @@ def vehicleIdService(models:dict):
 
     logger.info("---------------")
     logger.info("Nhtsa vehicles")
-    logger.info(f"Total retrieved :" , len(response_data))
+    logger.info(f"Total retrieved :" , {len(response_data)})
     logger.info('Time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
 
 
     return response_data
 
 #modelService
-
 def modelService(dict_model_year:dict):
 
     start_time = datetime.now() 
@@ -121,7 +125,7 @@ def modelService(dict_model_year:dict):
 
     logger.info("---------------")
     logger.info("Nhtsa models")
-    logger.info(f"Total retrieved :" , len(response_data))
+    logger.info(f"Total retrieved : {len(response_data)}")
     logger.info('Time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
 
     return response_data
@@ -133,14 +137,8 @@ def modelYear():
 
     url = config['NHTSA']['Years']
 
-
     data = extract(url,'Results')
     
-    #df = pandas.DataFrame(data)['ModelYear']
-    #logging.info(type(data))
-    #logging.info(data)
-    #df = data['ModelYear']
-    #response_array = df.to_numpy()
     if len(data)<0:
         return []
     else:
@@ -172,23 +170,24 @@ def makeService(years:list):
 
         response = extract(url,'Results')
         
-        results = response['Results']
-
-        if(len(results) > 0 ):
-            response_data.extend([{'Make': item['Make'], 'ModelYear': item['ModelYear'] } for item in results])
+        if len(response) == 0:
+            logger.warning(f"No data retrieved from: {url}")
+        
         else:
-            logger.warning(f"No data retrieved from:{url}")
+            results = response['Results']
+            response_data.extend([{'Make': item['Make'], 'ModelYear': item['ModelYear'] } for item in results])
+
+            
 
     time_elapsed = datetime.now() - start_time 
 
     logger.info("---------------")
     logger.info("Nhtsa make")
-    logger.info(f"Total retrieved :  {(len(results))}")
+    logger.info(f"Total retrieved :  {len(response_data)}")
     logger.info('Time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
 
     return response_data
 
-import functools
 #Teste Purpose
 def extractThread(urlHTTP,normalizeOutput):
 
@@ -196,11 +195,11 @@ def extractThread(urlHTTP,normalizeOutput):
 
     extract_partial = functools.partial(extract, normalizeOutput=normalizeOutput)
 
-    #results = processors.map(extract_partial , urlHTTP)
-    #processors.close()
-    #processors.join()
-    #return results
-    pprint(extract_partial)
+    results = processors.map(extract_partial , urlHTTP)
+    processors.close()
+    processors.join()
+    return results
+    #pprint(extract_partial)
     
 #extract
 def extract(urlHTTP,normalizeOutput) -> list:
@@ -217,8 +216,7 @@ def extract(urlHTTP,normalizeOutput) -> list:
         if response.status_code == 200:
             responseData = response.json()
         else:
-            pprint(f"Error Connecting:{response.status_code}")
-            logger.error("Error Connecting:",response.status_code)
+            logger.error(f"Error Connecting: {response.status_code}")
             return []
 
         if len(responseData.get(normalizeOutput)) > 0:
@@ -228,13 +226,13 @@ def extract(urlHTTP,normalizeOutput) -> list:
             return responseData
 
     except requests.exceptions.HTTPError as errh:
-        logger.error("Http Error:",errh)
+        logger.error(f"Http Error: {errh}")
     except requests.exceptions.ConnectionError as errc:
-        logger.error("Error Connecting:",errc)
+        logger.error(f"Error Connecting: {errc}")
     except requests.exceptions.Timeout as errt:
-        logger.error("Timeout Error:",errt)
+        logger.error(f"Timeout Error: {errt}")
     except requests.exceptions.RequestException as err:
-        logger.error("OOps: Something Else",err)
+        logger.error(f"OOps: Something Else {err}")
 
         ''' #why i'm using normalize
         if 'Results' in responseData:

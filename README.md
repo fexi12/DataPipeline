@@ -106,6 +106,7 @@ Main*.py initialize the pipeline giving it's proper order :
 - [x] Transform data to the correct format
 - [x] Replace Null Values to empty
 - [x] Upload the DataFrame Locally
+- [ ] Continues to process data even if a url have no data
 - [ ] Check the Data and it's transformation 
 - [ ] Upload the DataFrame to MSQ Server
 - [ ] Create DataFrame with index (missing someones)

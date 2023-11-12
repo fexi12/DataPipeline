@@ -2,7 +2,7 @@ import json
 from extract_ratings import *
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 import configparser
-import extract_ratings as extract
+import extract_ratings
 
 
 config = configparser.ConfigParser()
@@ -16,7 +16,7 @@ def main():
     #url = 'https://api.nhtsa.gov/SafetyRatings'
     #url = 'https://api.nhtsa.gov/SafetyRatings/modelyear/2013/make/ACURA'
     
-    extract()
+    extract_ratings()
    
     
    
